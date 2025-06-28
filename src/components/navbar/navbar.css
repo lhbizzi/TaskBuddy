@@ -1,0 +1,20 @@
+.container_navbar {
+  background-color: #111827;
+  width: 100vw;
+  height: 80px;
+  color: white; /* Optional: to make the text visible */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  width: 50px;
+  object-fit: cover;
+  margin-left: 25px;
+}
+
+.user-icon {
+  font-size: 50px;
+  margin-right: 25px;
+}
