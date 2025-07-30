@@ -9,7 +9,7 @@ const Login = () => {
         <img
           src="/src/assets/logo_nome.png"
           alt="logo"
-          style={{ width: "600px", marginBottom: "20px" }}
+          className="logo" // Add back the className if you removed it
         />
         <Input placeholder="Email" className="input" />
         <Input placeholder="Senha" className="input" />

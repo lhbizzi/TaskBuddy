@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@import "rsuite/dist/rsuite.min.css";
+
 * {
   margin: 0;
   padding: 0;

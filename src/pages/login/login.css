@@ -1,3 +1,14 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  /* Add this to ensure height calculation is consistent across browsers */
+  box-sizing: border-box;
+  /* Optionally, if you want to prevent scrolling on the entire page */
+  overflow: hidden;
+}
+
+/* Your existing .container styles */
 .container {
   background-color: #111827;
   width: 100vw;
@@ -22,7 +33,9 @@
 }
 
 .logo {
-  width: 900px;
+  width: 60%; /* Or whatever percentage looks good on various screens */
+  max-width: 600px; /* Optional: Set a maximum size so it doesn't get too big on very large screens */
+  height: auto;
   margin-bottom: 20px;
 }
 

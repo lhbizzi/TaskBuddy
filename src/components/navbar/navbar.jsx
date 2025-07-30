@@ -5,7 +5,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 const Navbar = () => {
   return (
     <div className="container_navbar">
-      <img src="/src/assets/logo.png" alt="logo" className="logo" />
+      <img src="/src/assets/logo.png" alt="logo" className="logo-tb-nav" />
       <FaRegUserCircle className="user-icon" />
       <div className="sidebar"></div>
     </div>
