@@ -1,22 +1,70 @@
 .user-avatar {
-  width: 50px
-  height: 50px
-  object-fit: cover
-  border-radius: 20px
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 20px;
 }
 
 .user {
-  display: flex
-  align-items: center
-  gap: 8px
-  margin-bottom: 24px
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
 }
 
 .sidebar {
-  display: flex
-  flex-direction: column
-  justify-content: space-between
-  background-color: #f8f6f6
-  height: 100vh
-  border-radius: 0px 18px 18px 0px
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #f8f6f6;
+  height: 100vh;
+  border-radius: 0px 18px 18px 0px;
+}
+
+.rs-sidenav,
+.rs-sidenav-item,
+.rs-sidenav-toggle-button {
+  background-color: #f8f6f6 !important;
+  color: #6b7280 !important;
+  border-color: #6b7280;
+}
+
+.rs-sidenav-item-active {
+  font-weight: bold;
+  background-color: #d8d6db !important;
+}
+
+.rs-sidenav-toggle {
+  border-top-color: #111827 !important;
+}
+
+.rs-sidenav {
+  height: 100% !important; /* Adicionado !important para forçar a altura */
+  border-radius: 0px 18px 18px 0px; /* Mantém a borda arredondada */
+}
+
+.rs-sidenav-item-active {
+  font-weight: bold;
+  background-color: #d8d6db !important;
+}
+
+.rs-sidenav-toggle {
+  border-top-color: #111827 !important;
+}
+
+.sidebar-container {
+  width: 270px; /* Altere este valor para a largura desejada, por exemplo, 300px */
+  flex-shrink: 0;
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+  background-color: #f8f6f6;
+}
+
+/* ... a classe .sidebar-container-collapsed continua a mesma ... */
+.sidebar-container-collapsed {
+  width: 56px; /* Largura para mostrar apenas os ícones */
+  flex-shrink: 0;
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+  background-color: #f8f6f6;
 }

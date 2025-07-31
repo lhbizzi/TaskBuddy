@@ -1,7 +1,8 @@
-import "./login.css";
+import React from "react";
 import { Input } from "rsuite";
+import "../login/login.css";
 
-const Login = () => {
+const Signup = () => {
   return (
     <>
       <div className="container">
@@ -10,30 +11,21 @@ const Login = () => {
           alt="logo"
           className="logo" // Add back the className if you removed it
         />
+        <Input placeholder="Nome" className="input" />
+        <Input placeholder="Sobrenome" className="input" />
         <Input placeholder="Email" className="input" />
         <Input placeholder="Senha" className="input" />
         <button
           className="button"
           onClick={() => {
-            window.location.href = "/home";
+            window.location.href = "/";
           }}
         >
-          Entrar
+          Registrar
         </button>
-        <p>
-          Não possui uma conta?
-          <button
-            className="button_cad"
-            onClick={() => {
-              window.location.href = "/register";
-            }}
-          >
-            Cadastre-se
-          </button>
-        </p>
       </div>
     </>
   );
 };
 
-export default Login;
+export default Signup;

@@ -1,0 +1,18 @@
+/* Estilos para o container principal da aplicação (deve estar no App.css) */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Estilos para o container principal que contém a Sidebar e o conteúdo */
+.main-content-container {
+  display: flex;
+  flex: 1;
+}
+
+/* Estilos para o conteúdo da página */
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+}
