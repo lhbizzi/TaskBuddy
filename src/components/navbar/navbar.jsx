@@ -7,7 +7,6 @@ const Navbar = () => {
     <div className="container_navbar">
       <img src="/src/assets/logo.png" alt="logo" className="logo-tb-nav" />
       <FaRegUserCircle className="user-icon" />
-      <div className="sidebar"></div>
     </div>
   );
 };

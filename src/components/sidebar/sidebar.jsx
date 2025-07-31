@@ -18,44 +18,42 @@ const Sidebar = () => {
     onExpand,
     ...navProps
   }) => {
-    <div className="flex justify-center min-h-screen bg-gray-100 p-4">
-      <div className="w-full max-w-xs bg-white shadow-lg rounded-lg overflow-hidden">
-        <Sidenav
-          defaultOpenKeys={["1"]}
-          expanded={expanded}
-          onExpand={setExpand}
-          appearance={appearance}
-          openKeys={openKeys}
-          onOpenChange={onOpenChange}
-        >
-          <Sidenav.Body>
-            <Nav {...navProps}>
-              <Nav.Item
-                icon={<IoTodayOutline />}
-                eventKey="1-1"
-                className="py-2 px-4 text-gray-700 hover:bg-blue-100 hover:text-blue-600 rounded-md transition-colors duration-200"
-              >
-                Hoje
-              </Nav.Item>
-              <Nav.Item
-                icon={<FaRegCalendarAlt />}
-                eventKey="1-2"
-                className="py-2 px-4 text-gray-700 hover:bg-blue-100 hover:text-blue-600 rounded-md transition-colors duration-200"
-              >
-                Calendário
-              </Nav.Item>
-              <Nav.Item
-                icon={<MdTaskAlt />}
-                eventKey="1-3"
-                className="py-2 px-4 text-gray-700 hover:bg-blue-100 hover:text-blue-600 rounded-md transition-colors duration-200"
-              >
-                Todas as Tarefas
-              </Nav.Item>
-            </Nav>
-          </Sidenav.Body>
-          <Sidenav.Toggle onToggle={onExpand} />
-        </Sidenav>
-      </div>
+    <div>
+      <Sidenav
+        defaultOpenKeys={["1"]}
+        expanded={expanded}
+        onExpand={setExpand}
+        appearance={appearance}
+        openKeys={openKeys}
+        onOpenChange={onOpenChange}
+      >
+        <Sidenav.Body>
+          <Nav {...navProps}>
+            <Nav.Item
+              icon={<IoTodayOutline />}
+              eventKey="1-1"
+              className="py-2 px-4 text-gray-700 hover:bg-blue-100 hover:text-blue-600 rounded-md transition-colors duration-200"
+            >
+              Hoje
+            </Nav.Item>
+            <Nav.Item
+              icon={<FaRegCalendarAlt />}
+              eventKey="1-2"
+              className="py-2 px-4 text-gray-700 hover:bg-blue-100 hover:text-blue-600 rounded-md transition-colors duration-200"
+            >
+              Calendário
+            </Nav.Item>
+            <Nav.Item
+              icon={<MdTaskAlt />}
+              eventKey="1-3"
+              className="py-2 px-4 text-gray-700 hover:bg-blue-100 hover:text-blue-600 rounded-md transition-colors duration-200"
+            >
+              Todas as Tarefas
+            </Nav.Item>
+          </Nav>
+        </Sidenav.Body>
+        <Sidenav.Toggle onToggle={onExpand} />
+      </Sidenav>
     </div>;
   };
   return (

@@ -14,7 +14,7 @@ function Routes() {
 
   return (
     <>
-      <RouterProvider router={router} />;
+      <RouterProvider router={router} />
     </>
   );
 }
