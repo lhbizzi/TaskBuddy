@@ -4,12 +4,34 @@ import { MdTaskAlt } from "react-icons/md";
 import "./sidebar.css";
 import { IoTodayOutline } from "react-icons/io5";
 import { Nav, Sidenav } from "rsuite";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const [expanded, setExpand] = useState(true);
   const [openKeys, setOpenKeys] = useState(["1"]);
+  const [activeKey, setActiveKey] = useState("1-1");
 
-  // Usamos uma classe CSS condicional
+  const navigate = useNavigate();
+
+  const handleSelect = (eventKey) => {
+    setActiveKey(eventKey);
+
+    switch (eventKey) {
+      case "1-1":
+        navigate("/home");
+        break;
+      case "1-2":
+        navigate("/calendar");
+        break;
+      case "1-3":
+        navigate("/tasks");
+        break;
+      default:
+        navigate("/home");
+        break;
+    }
+  };
+
   const sidebarClass = expanded
     ? "sidebar-container"
     : "sidebar-container-collapsed";
@@ -22,6 +44,8 @@ const Sidebar = () => {
         appearance="inverse"
         openKeys={openKeys}
         onOpenChange={setOpenKeys}
+        activeKey={activeKey}
+        onSelect={handleSelect}
       >
         <Sidenav.Body>
           <Nav>

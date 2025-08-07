@@ -53,7 +53,7 @@
 }
 
 .sidebar-container {
-  width: 270px; /* Altere este valor para a largura desejada, por exemplo, 300px */
+  width: 260px; /* Largura expandida, você pode ajustar */
   flex-shrink: 0;
   height: 100%;
   transition: width 0.3s ease-in-out;

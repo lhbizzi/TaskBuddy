@@ -1,0 +1,15 @@
+class AuthController {
+    register(req, res) {
+        const { username, password } = req.body;
+        // Here you would typically hash the password and save the user to the database
+        res.json({ message: "User registered successfully", user: { username } });
+    }
+
+    login(req, res) {
+        const { username, password } = req.body;
+        // Here you would typically check the username and password against the database
+        res.json({ message: "User logged in successfully", user: { username } });
+    }
+}
+
+export default AuthController;

@@ -16,3 +16,10 @@
   flex: 1;
   overflow-y: auto;
 }
+
+.all-pages {
+  background-color: #e1e3e8;
+  padding: 20px;
+  margin: 0;
+  height: 92vh;
+}
