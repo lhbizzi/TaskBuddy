@@ -10,7 +10,7 @@ export async function login(email, senha) {
 }
 
 export async function register(email, senha) {
-  const response = await fetch(`${API_URL}/register`, {
+  const response = await fetch("http://localhost:3000/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, senha }),

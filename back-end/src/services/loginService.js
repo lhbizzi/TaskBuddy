@@ -16,18 +16,18 @@ class AuthController {
   }
 
   async register(req, res) {
-    const { email, senha } = req.body;
+    const { nome, sobrenome, email, senha } = req.body;
     const existingUser = await userRepository.findUserByEmail(email);
     if (existingUser) {
       return res
         .status(400)
         .json({ success: false, message: "Email já cadastrado." });
     }
-    const user = await userRepository.createUser(email, senha);
+    const user = await userRepository.createUser(nome, sobrenome, email, senha);
     return res.json({
       success: true,
       message: "Usuário registrado com sucesso!",
-      user: { email: user.email },
+      user: { nome: user.nome, sobrenome: user.sobrenome, email: user.email },
     });
   }
 }

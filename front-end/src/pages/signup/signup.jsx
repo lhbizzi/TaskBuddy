@@ -1,6 +1,7 @@
 import React from "react";
 import { Input } from "rsuite";
 import "../login/login.css";
+import { register } from "../../utils/service";
 
 const Signup = () => {
   return (
@@ -18,7 +19,7 @@ const Signup = () => {
         <button
           className="button"
           onClick={() => {
-            window.location.href = "/";
+            register();
           }}
         >
           Registrar

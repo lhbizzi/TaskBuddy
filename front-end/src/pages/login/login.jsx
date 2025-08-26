@@ -2,6 +2,7 @@ import "./login.css";
 import { Input } from "rsuite";
 import { useState } from "react";
 import { login } from "../../utils/service";
+import { errorMessage, successMessage } from "../../utils/notifications";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,13 +13,15 @@ const Login = () => {
     try {
       const data = await login(email, senha);
       if (data.success) {
+        successMessage("Login realizado com sucesso!");
         window.location.href = "/home";
       } else {
+        errorMessage(data.message || "Erro ao fazer login");
         setError(data.message || "Erro ao fazer login");
       }
     } catch (err) {
       setError("Erro de conexão com o servidor");
-      console.error("Login error:", err);
+      errorMessage(err.message || "Erro de conexão com o servidor");
     }
   };
 
