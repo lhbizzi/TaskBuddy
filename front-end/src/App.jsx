@@ -1,8 +1,8 @@
 import AppRoutes from "./utils/routes";
 import "rsuite/dist/rsuite.min.css";
 import "./App.css";
-import ToastContainer from "rsuite/esm/toaster/ToastContainer";
 import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (

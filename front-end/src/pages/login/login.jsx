@@ -7,7 +7,6 @@ import { errorMessage, successMessage } from "../../utils/notifications";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [error, setError] = useState("");
 
   const handleLogin = async () => {
     try {
@@ -17,11 +16,9 @@ const Login = () => {
         window.location.href = "/home";
       } else {
         errorMessage(data.message || "Erro ao fazer login");
-        setError(data.message || "Erro ao fazer login");
       }
     } catch (err) {
-      setError("Erro de conexão com o servidor");
-      errorMessage(err.message || "Erro de conexão com o servidor");
+      errorMessage(err.message);
     }
   };
 
@@ -45,7 +42,6 @@ const Login = () => {
         <button className="button" onClick={handleLogin}>
           Entrar
         </button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
         <p>
           Não possui uma conta?
           <button
