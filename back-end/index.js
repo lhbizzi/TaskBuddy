@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+require("./src/database");
 const port = 3000;
 
 const authRoutes = require("./src/controllers/loginController");
