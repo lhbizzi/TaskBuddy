@@ -1,3 +1,8 @@
+.sidebar-container-collapsed .rs-sidenav-item span,
+.sidebar-container-collapsed .rs-sidenav-item .rs-nav-item-content,
+.sidebar-container-collapsed .rs-sidenav-item .rs-sidenav-item-label {
+  display: none !important;
+}
 .user-avatar {
   width: 50px;
   height: 50px;
@@ -67,4 +72,16 @@
   height: 100%;
   transition: width 0.3s ease-in-out;
   background-color: #f8f6f6;
+}
+
+/* Oculta o texto dos itens quando colapsado */
+.sidebar-container-collapsed .rs-sidenav-item .rs-nav-item-content {
+  display: none !important;
+}
+
+/* Centraliza os ícones */
+.sidebar-container-collapsed .rs-sidenav-item .rs-icon {
+  margin: 0 auto !important;
+  display: block !important;
+  font-size: 1.7rem !important;
 }
