@@ -14,14 +14,14 @@ const TaskController = {
     res.json(task);
   },
   create: async (req, res) => {
-    const { title, description, status, dueDate, userId } = req.body;
-    if (!title || !description) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Título e descrição são obrigatórios.",
-        });
+    const { title, description, status, dueDate } = req.body;
+    // O id do usuário deve vir do req.body ou do token, aqui mantemos do body
+    const userId = req.body.userId;
+    if (!title || !description || !userId) {
+      return res.status(400).json({
+        success: false,
+        message: "Título, descrição e usuário são obrigatórios.",
+      });
     }
     const task = { title, description, status, dueDate, userId };
     const newTask = await TaskService.createTask(task);
@@ -29,7 +29,14 @@ const TaskController = {
   },
   update: async (req, res) => {
     const { id } = req.params;
-    const task = req.body;
+    const { title, description, status, dueDate, userId } = req.body;
+    if (!title || !description || !userId) {
+      return res.status(400).json({
+        success: false,
+        message: "Título, descrição e usuário são obrigatórios.",
+      });
+    }
+    const task = { title, description, status, dueDate, userId };
     const updatedTask = await TaskService.updateTask(id, task);
     res.json(updatedTask);
   },
@@ -55,6 +62,11 @@ const TaskController = {
         error: error.message,
       });
     }
+  },
+  getByUserId: async (req, res) => {
+    const { userId } = req.params;
+    const tasks = await TaskService.getTasksByUserId(userId);
+    res.json(tasks);
   },
 };
 

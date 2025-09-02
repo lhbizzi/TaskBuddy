@@ -30,7 +30,7 @@ const AppLayout = () => (
 // Componente para proteger rotas
 function PrivateRoute({ children }) {
   const location = useLocation();
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   if (!token) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }

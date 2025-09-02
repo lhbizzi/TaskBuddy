@@ -4,12 +4,14 @@ import "../login/login.css";
 import { register } from "../../utils/service";
 import { errorMessage, successMessage } from "../../utils/notifications";
 import { useNavigate } from "react-router";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Signup = () => {
   const [name, setName] = useState();
   const [sobrenome, setSobrenome] = useState();
   const [email, setEmail] = useState();
   const [senha, setSenha] = useState();
+  const [showSenha, setShowSenha] = useState(false);
 
   const navigate = useNavigate();
 
@@ -52,12 +54,41 @@ const Signup = () => {
           value={email}
           onChange={setEmail}
         />
-        <Input
-          placeholder="Senha"
-          className="input"
-          value={senha}
-          onChange={setSenha}
-        />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            width: "100%",
+            justifyContent: "center",
+          }}
+        >
+          <Input
+            placeholder="Senha"
+            className="input"
+            type={showSenha ? "text" : "password"}
+            value={senha}
+            onChange={setSenha}
+            style={{ width: "100%" }}
+          />
+          <button
+            type="button"
+            className="show-password-btn"
+            onClick={() => setShowSenha((prev) => !prev)}
+            style={{
+              marginLeft: "-25px",
+              marginTop: "7px",
+              padding: "0",
+              border: "none",
+              background: "none",
+            }}
+          >
+            {showSenha ? (
+              <FaEye className="eye-icon" />
+            ) : (
+              <FaEyeSlash className="eye-icon" />
+            )}
+          </button>
+        </div>
         <button
           className="button"
           onClick={() => {

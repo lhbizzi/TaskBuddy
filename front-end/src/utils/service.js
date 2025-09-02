@@ -1,3 +1,5 @@
+import { handleError } from "./errors";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function login(email, senha) {
@@ -8,10 +10,22 @@ export async function login(email, senha) {
   });
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.message || "Erro ao fazer login");
+    throw new Error(
+      handleError({
+        status: response.status,
+        statusText: response.statusText,
+        message: data.message,
+      })
+    );
   }
   if (data.token) {
-    localStorage.setItem("token", data.token);
+    sessionStorage.setItem("token", data.token);
+  }
+  if (data.user) {
+    sessionStorage.setItem("id", JSON.stringify(data.user.id));
+    sessionStorage.setItem("nome", JSON.stringify(data.user.nome));
+    sessionStorage.setItem("sobrenome", JSON.stringify(data.user.sobrenome));
+    sessionStorage.setItem("email", JSON.stringify(data.user.email));
   }
   return data;
 }
@@ -27,25 +41,37 @@ export async function register(nome, sobrenome, email, senha) {
   );
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.message || "Erro ao fazer registro");
+    throw new Error(
+      handleError({
+        status: response.status,
+        statusText: response.statusText,
+        message: data.message,
+      })
+    );
   }
   if (data.token) {
-    localStorage.setItem("token", data.token);
+    sessionStorage.setItem("token", data.token);
   }
-  return data;
-}
-// CRUD de tarefas
-export async function getTasks() {
-  const response = await fetch(`${API_URL}/tasks`);
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.message || "Erro ao buscar tarefas");
+  if (data.user) {
+    sessionStorage.setItem("id", JSON.stringify(data.user.id));
+    sessionStorage.setItem("nome", JSON.stringify(data.user.nome));
+    sessionStorage.setItem("sobrenome", JSON.stringify(data.user.sobrenome));
+    sessionStorage.setItem("email", JSON.stringify(data.user.email));
+  }
   return data;
 }
 
 export async function getTaskById(id) {
-  const response = await fetch(`${API_URL}/tasks/${id}`);
+  const response = await fetch(`${API_URL}/tasks/user/${id}`);
   const data = await response.json();
-  if (!response.ok) throw new Error(data.message || "Erro ao buscar tarefa");
+  if (!response.ok)
+    throw new Error(
+      handleError({
+        status: response.status,
+        statusText: response.statusText,
+        message: data.message,
+      })
+    );
   return data;
 }
 
@@ -67,7 +93,14 @@ export async function updateTask(id, task) {
     body: JSON.stringify(task),
   });
   const data = await response.json();
-  if (!response.ok) throw new Error(data.message || "Erro ao atualizar tarefa");
+  if (!response.ok)
+    throw new Error(
+      handleError({
+        status: response.status,
+        statusText: response.statusText,
+        message: data.message,
+      })
+    );
   return data;
 }
 
@@ -75,7 +108,14 @@ export async function deleteTask(id) {
   const response = await fetch(`${API_URL}/tasks/${id}`, {
     method: "DELETE",
   });
-  if (!response.ok) throw new Error("Erro ao deletar tarefa");
+  if (!response.ok)
+    throw new Error(
+      handleError({
+        status: response.status,
+        statusText: response.statusText,
+        message: response.message,
+      })
+    );
   // Não chama response.json() pois resposta é vazia (204)
   return true;
 }
@@ -89,6 +129,12 @@ export async function getTaskAdvice(tarefa, deadline) {
   });
   const data = await response.json();
   if (!response.ok)
-    throw new Error(data.message || "Erro ao obter conselho da IA");
+    throw new Error(
+      handleError({
+        status: response.status,
+        statusText: response.statusText,
+        message: data.message,
+      })
+    );
   return data;
 }

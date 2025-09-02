@@ -13,6 +13,12 @@ const Sidebar = () => {
 
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("id");
+    navigate("/");
+  };
+
   const handleSelect = (eventKey) => {
     setActiveKey(eventKey);
 
@@ -57,6 +63,13 @@ const Sidebar = () => {
             </Nav.Item>
             <Nav.Item icon={<MdTaskAlt />} eventKey="1-3">
               Todas as Tarefas
+            </Nav.Item>
+            <Nav.Item
+              eventKey="logout"
+              onClick={handleLogout}
+              style={{ color: "#e74c3c", marginTop: "20px" }}
+            >
+              Logout
             </Nav.Item>
           </Nav>
         </Sidenav.Body>

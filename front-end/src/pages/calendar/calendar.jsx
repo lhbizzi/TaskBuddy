@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./calendar.css";
-import { getTasks, createTask, getTaskAdvice } from "../../utils/service";
+import { getTaskById, createTask, getTaskAdvice } from "../../utils/service";
 import { errorMessage } from "../../utils/notifications";
 import { RiAiGenerate2 } from "react-icons/ri";
 import { Modal } from "rsuite";
@@ -16,9 +16,10 @@ const CalendarPage = () => {
   const [openAdvice, setOpenAdvice] = useState(false);
 
   useEffect(() => {
+    const userId = JSON.parse(sessionStorage.getItem("id"));
     async function fetchTasks() {
       try {
-        const data = await getTasks();
+        const data = await getTaskById(userId);
         setTasks(data);
       } catch (err) {
         // Trate erro se necessário\

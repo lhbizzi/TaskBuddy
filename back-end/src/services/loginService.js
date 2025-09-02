@@ -23,7 +23,12 @@ class AuthController {
         success: true,
         message: "Login realizado com sucesso!",
         token,
-        user: { nome: user.nome, sobrenome: user.sobrenome, email: user.email },
+        user: {
+          id: user._id,
+          nome: user.nome,
+          sobrenome: user.sobrenome,
+          email: user.email
+        },
       });
     }
     return res
@@ -70,7 +75,12 @@ class AuthController {
       success: true,
       message: "Usuário registrado com sucesso!",
       token,
-      user: { nome: user.nome, sobrenome: user.sobrenome, email: user.email },
+      user: {
+        id: user._id,
+        nome: user.nome,
+        sobrenome: user.sobrenome,
+        email: user.email
+      },
     });
   }
 

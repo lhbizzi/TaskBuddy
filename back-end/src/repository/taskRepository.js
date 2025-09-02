@@ -27,6 +27,10 @@ const TaskRepository = {
     await db.collection("tasks").deleteOne({ _id: new ObjectId(id) });
     return true;
   },
+  getByUserId: async (userId) => {
+    const tasks = await db.collection("tasks").find({ userId }).toArray();
+    return tasks;
+  },
 };
 
 module.exports = TaskRepository;
