@@ -2,11 +2,10 @@
 const User = require("../models/loginModels");
 
 // Salvar novo usuário
-const createUser = async (nome, sobrenome, email, senha) => {
+async function createUser(nome, sobrenome, email, senha) {
   const user = new User({ nome, sobrenome, email, senha });
   return await user.save();
-};
-
+}
 // Buscar usuário por email
 const findUserByEmail = async (email) => {
   return await User.findOne({ email });

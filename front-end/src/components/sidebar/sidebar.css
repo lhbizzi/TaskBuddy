@@ -76,7 +76,7 @@
 
 /* Oculta o texto dos itens quando colapsado */
 .sidebar-container-collapsed .rs-sidenav-item .rs-nav-item-content {
-  display: none !important;
+  display: none;
 }
 
 /* Centraliza os ícones */

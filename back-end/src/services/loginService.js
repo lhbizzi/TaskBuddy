@@ -5,12 +5,10 @@ class AuthController {
   async login(req, res) {
     const { email, senha } = req.body;
     if (!email || !senha) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "O email e a senha são obrigatórios.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "O email e a senha são obrigatórios.",
+      });
     }
 
     const user = await userRepository.findUserByEmail(email);

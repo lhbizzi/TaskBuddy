@@ -7,7 +7,13 @@ const port = 3000;
 const authRoutes = require("./src/routes/loginRoutes");
 const taskRoutes = require("./src/routes/taskRoutes");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json());
 
 app.use("/auth", authRoutes);

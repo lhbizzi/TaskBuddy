@@ -3,6 +3,7 @@ import { Input } from "rsuite";
 import "../login/login.css";
 import { register } from "../../utils/service";
 import { errorMessage, successMessage } from "../../utils/notifications";
+import { useNavigate } from "react-router";
 
 const Signup = () => {
   const [name, setName] = useState();
@@ -10,12 +11,14 @@ const Signup = () => {
   const [email, setEmail] = useState();
   const [senha, setSenha] = useState();
 
+  const navigate = useNavigate();
+
   const handleSignup = async () => {
     try {
-      const data = await register(email, senha);
+      const data = await register(name, sobrenome, email, senha);
       if (data.success) {
         successMessage("Login realizado com sucesso!");
-        window.location.href = "/home";
+        navigate("/home");
       } else {
         errorMessage(data.message || "Erro ao fazer login");
       }
@@ -63,6 +66,12 @@ const Signup = () => {
         >
           Registrar
         </button>
+        <p>
+          Já possui uma conta?
+          <button className="button_cad" onClick={() => navigate("/")}>
+            Conecte-se
+          </button>
+        </p>
       </div>
     </>
   );

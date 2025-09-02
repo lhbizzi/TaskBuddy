@@ -1,4 +1,10 @@
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import Login from "../pages/login/login";
 import Home from "../pages/home/home";
 import NotFound from "../pages/notFound/notFound";
@@ -21,6 +27,16 @@ const AppLayout = () => (
   </div>
 );
 
+// Componente para proteger rotas
+function PrivateRoute({ children }) {
+  const location = useLocation();
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return <Navigate to="/" state={{ from: location }} replace />;
+  }
+  return children;
+}
+
 function AppRoutes() {
   const router = createBrowserRouter([
     { path: "/", element: <Login /> },
@@ -28,14 +44,34 @@ function AppRoutes() {
     {
       element: <AppLayout />,
       children: [
-        { path: "/home", element: <Home /> },
-        { path: "/calendar", element: <Calendar /> },
-        { path: "/tasks", element: <TodasTarefas /> },
-        { path: "*", element: <NotFound /> },
+        {
+          path: "/home",
+          element: (
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          ),
+        },
+        {
+          path: "/calendar",
+          element: (
+            <PrivateRoute>
+              <Calendar />
+            </PrivateRoute>
+          ),
+        },
+        {
+          path: "/tasks",
+          element: (
+            <PrivateRoute>
+              <TodasTarefas />
+            </PrivateRoute>
+          ),
+        },
       ],
     },
+    { path: "*", element: <NotFound /> },
   ]);
-
   return <RouterProvider router={router} />;
 }
 

@@ -9,4 +9,7 @@ router.post("/", TaskController.create);
 router.put("/:id", TaskController.update);
 router.delete("/:id", TaskController.delete);
 
+// Rota para obter plano de ação via OpenAI
+router.post("/advice", TaskController.getAdvice);
+
 module.exports = router;
