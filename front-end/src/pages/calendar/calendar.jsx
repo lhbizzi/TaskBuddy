@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./calendar.css";
-import { RiAiGenerate2, RiDeleteBin6Line } from "react-icons/ri";
+import { RiAiGenerate2, RiDeleteBin6Line, RiEdit2Line } from "react-icons/ri";
 import { Modal } from "rsuite";
 import TaskForm from "../../components/TaskForm";
 import { useTaskContext } from "../../context/TaskContext";
@@ -11,7 +11,8 @@ const CalendarPage = () => {
   const [date, setDate] = useState(new Date());
   const [advice, setAdvice] = useState("");
   const [openAdvice, setOpenAdvice] = useState(false);
-  const { tasks, removeTask } = useTaskContext();
+  const { tasks, removeTask, setForm, setEditId, initialFormState } =
+    useTaskContext();
 
   // Função para obter conselho da IA para uma tarefa
   const handleAdvice = async (task) => {
@@ -47,6 +48,13 @@ const CalendarPage = () => {
     }
     return taskDateStr === selectedDateStr;
   });
+
+  useEffect(() => {
+    setForm({
+      ...initialFormState,
+      dueDate: date.toISOString().slice(0, 10),
+    });
+  }, [date]);
 
   return (
     <div className="calendar-full">
@@ -100,6 +108,30 @@ const CalendarPage = () => {
                           }}
                         >
                           <RiAiGenerate2 />
+                        </button>
+                      </div>
+                      <div></div>
+                      <div>
+                        <button
+                          type="button"
+                          title="Editar Tarefa"
+                          onClick={() => {
+                            setEditId(task._id);
+                            setForm((prev) => ({
+                              ...prev,
+                              id: task._id,
+                              title: task.title,
+                              description: task.description,
+                              dueDate: task.dueDate,
+                            }));
+                          }}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <RiEdit2Line />
                         </button>
                       </div>
                       <div>

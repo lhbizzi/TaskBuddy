@@ -4,24 +4,23 @@ import { MdTaskAlt } from "react-icons/md";
 import "./sidebar.css";
 import { IoTodayOutline } from "react-icons/io5";
 import { Nav, Sidenav } from "rsuite";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
   const [expanded, setExpand] = useState(true);
   const [openKeys, setOpenKeys] = useState(["1"]);
-  const [activeKey, setActiveKey] = useState("1-1");
+  // Não usa mais activeKey local, será calculado a partir da rota
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("id");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("id");
     navigate("/");
   };
 
   const handleSelect = (eventKey) => {
-    setActiveKey(eventKey);
-
     switch (eventKey) {
       case "1-1":
         navigate("/home");
@@ -37,6 +36,16 @@ const Sidebar = () => {
         break;
     }
   };
+
+  // Mapeia pathname para eventKey
+  const getActiveKeyFromPath = (pathname) => {
+    if (pathname === "/home") return "1-1";
+    if (pathname === "/calendar") return "1-2";
+    if (pathname === "/tasks") return "1-3";
+    return "1-1";
+  };
+
+  const activeKey = getActiveKeyFromPath(location.pathname);
 
   const sidebarClass = expanded
     ? "sidebar-container"

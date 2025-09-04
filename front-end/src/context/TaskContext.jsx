@@ -6,7 +6,7 @@ import {
   updateTask,
   deleteTask,
 } from "../utils/service";
-import { errorMessage } from "../utils/notifications";
+import { errorMessage, successMessage } from "../utils/notifications";
 
 const TaskContext = createContext();
 
@@ -16,11 +16,12 @@ export const TaskProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [editId, setEditId] = useState(null);
 
   const initialFormState = {
-    titulo: "",
-    descricao: "",
-    dataVencimento: "",
+    title: "",
+    description: "",
+    dueDate: "",
     status: "pendente",
   };
   const [form, setForm] = useState(initialFormState);
@@ -57,6 +58,7 @@ export const TaskProvider = ({ children }) => {
     try {
       const newTask = await createTask(task);
       setTasks((prev) => [...prev, newTask]);
+      successMessage("Tarefa criada com sucesso");
     } catch (err) {
       setError(err.message || "Erro ao criar tarefa");
       errorMessage(err.message || "Erro ao criar tarefa");
@@ -71,6 +73,7 @@ export const TaskProvider = ({ children }) => {
     try {
       const updated = await updateTask(id, updates);
       setTasks((prev) => prev.map((t) => (t._id === id ? updated : t)));
+      successMessage("Tarefa atualizada com sucesso");
     } catch (err) {
       setError(err.message || "Erro ao atualizar tarefa");
       errorMessage(err.message || "Erro ao criar tarefa");
@@ -85,6 +88,7 @@ export const TaskProvider = ({ children }) => {
     try {
       await deleteTask(id);
       setTasks((prev) => prev.filter((t) => t._id !== id));
+      successMessage("Tarefa deletada com sucesso");
     } catch (err) {
       setError(err.message || "Erro ao deletar tarefa");
       errorMessage(err.message || "Erro ao criar tarefa");
@@ -111,6 +115,8 @@ export const TaskProvider = ({ children }) => {
         setForm,
         handleChange,
         initialFormState,
+        editId,
+        setEditId,
       }}
     >
       {children}
