@@ -1,66 +1,52 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./calendar.css";
-import { getTaskById, createTask, getTaskAdvice } from "../../utils/service";
-import { errorMessage } from "../../utils/notifications";
-import { RiAiGenerate2 } from "react-icons/ri";
+import { RiAiGenerate2, RiDeleteBin6Line } from "react-icons/ri";
 import { Modal } from "rsuite";
+import TaskForm from "../../components/TaskForm";
+import { useTaskContext } from "../../context/TaskContext";
 
 const CalendarPage = () => {
   const [date, setDate] = useState(new Date());
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState("");
-  const [description, setDescription] = useState("");
   const [advice, setAdvice] = useState("");
   const [openAdvice, setOpenAdvice] = useState(false);
+  const { tasks, removeTask } = useTaskContext();
 
-  useEffect(() => {
-    const userId = JSON.parse(sessionStorage.getItem("id"));
-    async function fetchTasks() {
-      try {
-        const data = await getTaskById(userId);
-        setTasks(data);
-      } catch (err) {
-        // Trate erro se necessário\
-        errorMessage(err.message);
-      }
-    }
-    fetchTasks();
-  }, []);
-
-  // Filtra tarefas do dia selecionado
-  const tasksForDay = tasks.filter(
-    (task) =>
-      new Date(task.dueDate || task.date).toDateString() === date.toDateString()
-  );
-
-  const handleCreateTask = async (e, taskTitle, taskDate) => {
-    if (e) e.preventDefault();
-    const title = taskTitle || newTask;
-    const dueDate = taskDate || date;
-    if (!title.trim() || !description.trim()) return;
-    const taskObj = {
-      title,
-      description,
-      dueDate,
-      status: "pendente",
-    };
+  // Função para obter conselho da IA para uma tarefa
+  const handleAdvice = async (task) => {
     try {
-      const created = await createTask(taskObj);
-      setTasks([...tasks, created]);
-      setNewTask("");
-      setDescription("");
-      // Chama IA para conselho
-      const ai = await getTaskAdvice(
-        title,
-        dueDate.toLocaleDateString("pt-BR")
+      const ai = await import("../../utils/service").then((m) =>
+        m.getTaskAdvice(task.title, task.dueDate || task.date)
       );
       setAdvice(ai.advice);
+      setOpenAdvice(true);
     } catch (err) {
-      errorMessage(err.message);
+      setAdvice("Erro ao obter conselho da IA", err);
+      setOpenAdvice(true);
     }
   };
+
+  // Filtra tarefas do dia selecionado
+  const tasksForDay = tasks.filter((task) => {
+    const taskDate = task.dueDate;
+    if (!taskDate) return false;
+    // Normaliza para yyyy-MM-dd
+    const pad = (n) => n.toString().padStart(2, "0");
+    const selectedDateStr = `${date.getFullYear()}-${pad(
+      date.getMonth() + 1
+    )}-${pad(date.getDate())}`;
+    let taskDateStr = taskDate;
+    if (taskDate instanceof Date) {
+      taskDateStr = `${taskDate.getFullYear()}-${pad(
+        taskDate.getMonth() + 1
+      )}-${pad(taskDate.getDate())}`;
+    } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(taskDate)) {
+      const [d, m, y] = taskDate.split("/");
+      taskDateStr = `${y}-${pad(m)}-${pad(d)}`;
+    }
+    return taskDateStr === selectedDateStr;
+  });
 
   return (
     <div className="calendar-full">
@@ -80,7 +66,7 @@ const CalendarPage = () => {
           </h2>
         </header>
         <section className="tasks-list">
-          <h3>Tarefas do dia</h3>
+          <h3>Tarefas Vencendo o Prazo</h3>
 
           {tasksForDay.length === 0 ? (
             <p className="no-tasks">Nenhuma tarefa para este dia.</p>
@@ -101,18 +87,35 @@ const CalendarPage = () => {
                       </span>
                       <span>{task.description}</span>
                     </div>
-                    <div>
-                      <button
-                        onClick={() =>
-                          handleCreateTask(
-                            null,
-                            task.title,
-                            new Date(task.dueDate || task.date)
-                          )
-                        }
-                      >
-                        <RiAiGenerate2 />
-                      </button>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <div>
+                        <button
+                          type="button"
+                          title="Conselho da IA"
+                          onClick={() => handleAdvice(task)}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <RiAiGenerate2 />
+                        </button>
+                      </div>
+                      <div>
+                        <button
+                          type="button"
+                          title="Remover Tarefa"
+                          onClick={() => removeTask(task._id)}
+                        >
+                          <RiDeleteBin6Line
+                            style={{
+                              color: "red",
+                              backgroundColor: "transparent",
+                            }}
+                          />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </li>
@@ -121,21 +124,7 @@ const CalendarPage = () => {
           )}
         </section>
         <section className="task-create">
-          <form className="task-form" onSubmit={handleCreateTask}>
-            <input
-              type="text"
-              placeholder="Nova tarefa..."
-              value={newTask}
-              onChange={(e) => setNewTask(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Descrição da tarefa..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <button type="submit">Criar tarefa</button>
-          </form>
+          <TaskForm />
           <Modal open={openAdvice} onClose={() => setOpenAdvice(false)}>
             <Modal.Header>
               <Modal.Title>Conselho da IA</Modal.Title>

@@ -15,25 +15,26 @@ const TaskController = {
   },
   create: async (req, res) => {
     const { title, description, status, dueDate } = req.body;
-    // O id do usuário deve vir do req.body ou do token, aqui mantemos do body
-    const userId = req.body.userId;
-    if (!title || !description || !userId) {
+    const userId = req.user.id;
+    if (!title || !description) {
       return res.status(400).json({
         success: false,
-        message: "Título, descrição e usuário são obrigatórios.",
+        message: "Título e descrição são obrigatórios.",
       });
     }
-    const task = { title, description, status, dueDate, userId };
+    const createdAt = new Date().toISOString();
+    const task = { title, description, status, dueDate, userId, createdAt };
     const newTask = await TaskService.createTask(task);
     res.status(201).json(newTask);
   },
   update: async (req, res) => {
     const { id } = req.params;
-    const { title, description, status, dueDate, userId } = req.body;
-    if (!title || !description || !userId) {
+    const { title, description, status, dueDate } = req.body;
+    const userId = req.user.id;
+    if (!title || !description) {
       return res.status(400).json({
         success: false,
-        message: "Título, descrição e usuário são obrigatórios.",
+        message: "Título e descrição são obrigatórios.",
       });
     }
     const task = { title, description, status, dueDate, userId };

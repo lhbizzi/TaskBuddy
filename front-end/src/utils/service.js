@@ -76,20 +76,35 @@ export async function getTaskById(id) {
 }
 
 export async function createTask(task) {
+  const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_URL}/tasks`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(task),
   });
   const data = await response.json();
-  if (!response.ok) throw new Error(data.message || "Erro ao criar tarefa");
+  if (!response.ok)
+    throw new Error(
+      handleError({
+        status: response.status,
+        statusText: response.statusText,
+        message: data.message,
+      })
+    );
   return data;
 }
 
 export async function updateTask(id, task) {
+  const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_URL}/tasks/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(task),
   });
   const data = await response.json();
@@ -105,8 +120,12 @@ export async function updateTask(id, task) {
 }
 
 export async function deleteTask(id) {
+  const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_URL}/tasks/${id}`, {
     method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
   if (!response.ok)
     throw new Error(
