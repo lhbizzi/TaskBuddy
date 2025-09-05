@@ -41,6 +41,7 @@ const TaskForm = () => {
     <>
       <form
         onSubmit={handleSubmit}
+        className="calendar-sidebar"
         style={{
           maxWidth: 400,
           margin: "0 auto",

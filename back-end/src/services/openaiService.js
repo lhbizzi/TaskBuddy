@@ -11,8 +11,9 @@ async function getTaskAdvice(task, deadline) {
   prompt += `\nMonte um plano de ação detalhado, passo a passo, para que o usuário consiga realizar essa tarefa com sucesso, considerando o prazo e as melhores práticas do tema.`;
   prompt += `\nResponda APENAS com um JSON no seguinte formato: {\n  \"dica1\":\"[dica1]\",\n  \"dica2\":\"[dica2]\",\n  ... até dica10\n}`;
   prompt += `\nCada dica deve ser um passo objetivo, claro e prático, sem repetições, e que realmente ajude o usuário a avançar na execução da tarefa.`;
+  prompt += `\nNÃO inclua datas, prazos ou referências de tempo em nenhuma dica. Apenas o passo a passo, sem mencionar datas.`;
 
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const model = genAI.getGenerativeModel({ model: "models/gemini-2.5-pro" });
   const result = await model.generateContent(prompt);
   const content = result.response.text();
 

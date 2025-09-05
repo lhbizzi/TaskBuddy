@@ -1,3 +1,36 @@
+// Buscar tarefas por data de encerramento (dueDate)
+export async function getTasksByDueDate(dueDate) {
+  const response = await fetch(
+    `${API_URL}/tasks/by-due-date?dueDate=${encodeURIComponent(dueDate)}`
+  );
+  const data = await response.json();
+  if (!response.ok)
+    throw new Error(
+      handleError({
+        status: response.status,
+        statusText: response.statusText,
+        message: data.message,
+      })
+    );
+  return data;
+}
+
+// Buscar tarefas por data de criação (createdAt)
+export async function getTasksByCreatedAt(createdAt) {
+  const response = await fetch(
+    `${API_URL}/tasks/by-created-at?createdAt=${encodeURIComponent(createdAt)}`
+  );
+  const data = await response.json();
+  if (!response.ok)
+    throw new Error(
+      handleError({
+        status: response.status,
+        statusText: response.statusText,
+        message: data.message,
+      })
+    );
+  return data;
+}
 import { handleError } from "./errors";
 
 const API_URL = import.meta.env.VITE_API_URL;
