@@ -4,6 +4,11 @@ const router = express.Router();
 const TaskController = require("../controllers/taskController");
 const authenticateToken = require("../middleware/tokenMiddleware");
 
+// Buscar tarefas por data de encerramento
+router.get("/by-due-date", TaskController.getByDueDate);
+// Buscar tarefas por data de criação
+router.get("/by-created-at", TaskController.getByCreatedAt);
+
 router.get("/", TaskController.getAll);
 router.get("/:id", TaskController.getById);
 router.get("/user/:userId", TaskController.getByUserId);

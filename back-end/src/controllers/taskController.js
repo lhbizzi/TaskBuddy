@@ -54,8 +54,8 @@ const TaskController = {
         .json({ success: false, message: "A tarefa é obrigatória." });
     }
     try {
-      const advice = await getTaskAdvice(tarefa, deadline);
-      res.json({ success: true, advice });
+      const dicas = await getTaskAdvice(tarefa, deadline);
+      res.json(dicas);
     } catch (error) {
       res.status(500).json({
         success: false,
@@ -67,6 +67,16 @@ const TaskController = {
   getByUserId: async (req, res) => {
     const { userId } = req.params;
     const tasks = await TaskService.getTasksByUserId(userId);
+    res.json(tasks);
+  },
+  getByDueDate: async (req, res) => {
+    const { dueDate } = req.query;
+    const tasks = await TaskService.getTasksByDueDate(dueDate);
+    res.json(tasks);
+  },
+  getByCreatedAt: async (req, res) => {
+    const { createdAt } = req.query;
+    const tasks = await TaskService.getTasksByCreatedAt(createdAt);
     res.json(tasks);
   },
 };

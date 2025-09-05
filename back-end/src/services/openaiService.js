@@ -1,31 +1,34 @@
-const OpenAI = require("openai");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function getTaskAdvice(task, deadline) {
-  let prompt = `Tenho a seguinte tarefa: "${task}".`;
+  let prompt = `Você é um especialista no assunto da tarefa a seguir e está atuando como assistente em um sistema de gestão de tarefas. Sua missão é ajudar o usuário a organizar e executar a tarefa da melhor forma possível.`;
+  prompt += `\nTarefa: "${task}".`;
   if (deadline) {
-    prompt += ` Preciso concluí-la até o dia ${deadline}.`;
+    prompt += ` Precisa ser concluída até o dia ${deadline}.`;
   }
-  prompt +=
-    " Me ajude a montar um plano para completar essa tarefa, considerando o prazo.";
+  prompt += `\nMonte um plano de ação detalhado, passo a passo, para que o usuário consiga realizar essa tarefa com sucesso, considerando o prazo e as melhores práticas do tema.`;
+  prompt += `\nResponda APENAS com um JSON no seguinte formato: {\n  \"dica1\":\"[dica1]\",\n  \"dica2\":\"[dica2]\",\n  ... até dica10\n}`;
+  prompt += `\nCada dica deve ser um passo objetivo, claro e prático, sem repetições, e que realmente ajude o usuário a avançar na execução da tarefa.`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: "system",
-        content: "Você é um assistente que ajuda a organizar tarefas.",
-      },
-      { role: "user", content: prompt },
-    ],
-    max_tokens: 150,
-    temperature: 0.7,
-  });
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const result = await model.generateContent(prompt);
+  const content = result.response.text();
 
-  return response.choices[0].message.content;
+  // Tenta extrair JSON da resposta
+  let dicas = {};
+  try {
+    const match = content.match(/\{[\s\S]*\}/);
+    if (match) {
+      dicas = JSON.parse(match[0]);
+    } else {
+      dicas = { dica1: content };
+    }
+  } catch (e) {
+    dicas = { dica1: content };
+  }
+  return dicas;
 }
 
 module.exports = { getTaskAdvice };

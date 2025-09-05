@@ -31,6 +31,14 @@ const TaskRepository = {
     const tasks = await db.collection("tasks").find({ userId }).toArray();
     return tasks;
   },
+  getByDueDate: async (dueDate) => {
+    // Busca tarefas com dueDate igual ao informado
+    return await TaskModel.find({ dueDate });
+  },
+  getByCreatedAt: async (createdAt) => {
+    // Busca tarefas com createdAt igual ao informado
+    return await TaskModel.find({ createdAt });
+  },
 };
 
 module.exports = TaskRepository;
