@@ -47,14 +47,14 @@ const TaskController = {
     res.status(204).send();
   },
   getAdvice: async (req, res) => {
-    const { tarefa, deadline } = req.body;
+    const { tarefa, description, deadline } = req.body;
     if (!tarefa) {
       return res
         .status(400)
         .json({ success: false, message: "A tarefa é obrigatória." });
     }
     try {
-      const dicas = await getTaskAdvice(tarefa, deadline);
+      const dicas = await getTaskAdvice(tarefa, description, deadline);
       res.json(dicas);
     } catch (error) {
       res.status(500).json({

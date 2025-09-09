@@ -6,6 +6,7 @@ const port = 3000;
 
 const authRoutes = require("./src/routes/loginRoutes");
 const taskRoutes = require("./src/routes/taskRoutes");
+const adviceRoutes = require("./src/routes/adviceRoutes");
 
 app.use(
   cors({
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use("/auth", authRoutes);
 app.use("/tasks", taskRoutes);
+app.use("/advices", adviceRoutes);
 
 app.get("/", (req, res) => {
   res.send("Olá, mundo!");

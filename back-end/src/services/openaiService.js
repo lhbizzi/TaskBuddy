@@ -2,9 +2,9 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-async function getTaskAdvice(task, deadline) {
+async function getTaskAdvice(task, description, deadline) {
   let prompt = `Você é um especialista no assunto da tarefa a seguir e está atuando como assistente em um sistema de gestão de tarefas. Sua missão é ajudar o usuário a organizar e executar a tarefa da melhor forma possível.`;
-  prompt += `\nTarefa: "${task}".`;
+  prompt += `\nTarefa: "${task}". Sendo sua descrição mais detalhada: ${description}`;
   if (deadline) {
     prompt += ` Precisa ser concluída até o dia ${deadline}.`;
   }
