@@ -1,29 +1,77 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./calendar.css";
 import { RiAiGenerate2, RiDeleteBin6Line, RiEdit2Line } from "react-icons/ri";
 import { Modal } from "rsuite";
+import AdviceModal from "../../components/AdviceModal";
 import TaskForm from "../../components/TaskForm";
 import { useTaskContext } from "../../context/TaskContext";
 
 const CalendarPage = () => {
   const [date, setDate] = useState(new Date());
-  const [advice, setAdvice] = useState("");
+  const [adviceSteps, setAdviceSteps] = useState([]);
+  // adviceByTaskId agora vem do contexto global
   const [openAdvice, setOpenAdvice] = useState(false);
-  const { tasks, removeTask, setForm, setEditId, initialFormState } =
-    useTaskContext();
+  const {
+    tasks,
+    removeTask,
+    setForm,
+    setEditId,
+    initialFormState,
+    form,
+    advice,
+    setAdvice,
+    adviceByTaskId,
+    setAdviceByTaskId,
+  } = useTaskContext();
+  // Garantir valor estável para initialFormState
+  const initialFormStateRef = useRef(initialFormState);
 
   // Função para obter conselho da IA para uma tarefa
   const handleAdvice = async (task) => {
-    try {
-      const ai = await import("../../utils/service").then((m) =>
-        m.getTaskAdvice(task.title, task.dueDate || task.date)
-      );
-      setAdvice(ai.advice);
+    // Checa se já existe advice para o ID da tarefa
+    if (adviceByTaskId[task._id]) {
+      setAdvice(adviceByTaskId[task._id].advice);
+      setAdviceSteps(adviceByTaskId[task._id].steps);
       setOpenAdvice(true);
-    } catch (err) {
-      setAdvice("Erro ao obter conselho da IA", err);
+      return;
+    }
+    try {
+      // Busca do backend
+      const service = await import("../../utils/service");
+      const dicasObj = await service.getTaskAdvice(
+        task.title,
+        task.description,
+        task.dueDate || task.date,
+        task._id
+      );
+      // dicasObj pode ser {advice: string, steps: array} ou só steps
+      let steps = [];
+      let adviceText = "";
+      if (Array.isArray(dicasObj)) {
+        steps = dicasObj.map(String);
+      } else if (dicasObj && typeof dicasObj === "object") {
+        if (Array.isArray(dicasObj.steps)) {
+          steps = dicasObj.steps.map(String);
+        } else {
+          // Se for objeto tipo {dica1:..., dica2:...}, transforma em array de strings
+          steps = Object.values(dicasObj)
+            .filter((v) => typeof v === "string")
+            .map(String);
+        }
+        adviceText = dicasObj.advice || "";
+      }
+      setAdvice(adviceText);
+      setAdviceSteps(steps);
+      setAdviceByTaskId((prev) => ({
+        ...prev,
+        [task._id]: { advice: adviceText, steps },
+      }));
+      setOpenAdvice(true);
+    } catch {
+      setAdvice("Erro ao obter conselho da IA");
+      setAdviceSteps([]);
       setOpenAdvice(true);
     }
   };
@@ -50,11 +98,22 @@ const CalendarPage = () => {
   });
 
   useEffect(() => {
-    setForm({
-      ...initialFormState,
-      dueDate: date.toISOString().slice(0, 10),
-    });
-  }, [date]);
+    // Sempre soma +1 dia ao selecionado
+    const nextDay = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate() + 1
+    );
+    const pad = (n) => n.toString().padStart(2, "0");
+    const nextDayStr = `${nextDay.getFullYear()}-${pad(
+      nextDay.getMonth() + 1
+    )}-${pad(nextDay.getDate())}`;
+    setForm((prev) => ({
+      ...initialFormStateRef.current,
+      ...prev,
+      dueDate: nextDayStr,
+    }));
+  }, [date, setForm]);
 
   return (
     <div className="calendar-full">
@@ -157,17 +216,15 @@ const CalendarPage = () => {
         </section>
         <section className="task-create">
           <TaskForm />
-          <Modal open={openAdvice} onClose={() => setOpenAdvice(false)}>
-            <Modal.Header>
-              <Modal.Title>Conselho da IA</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <p>{advice}</p>
-            </Modal.Body>
-            <Modal.Footer>
-              <button onClick={() => setOpenAdvice(false)}>Fechar</button>
-            </Modal.Footer>
-          </Modal>
+          <AdviceModal
+            open={openAdvice}
+            onClose={() => setOpenAdvice(false)}
+            advice={advice}
+            adviceSteps={adviceSteps}
+            tasks={tasks}
+            onAdviceStepsChange={setAdviceSteps}
+            titleTask={form.title}
+          />
           {advice && (
             <div className="task-advice">
               <strong>Conselho da IA:</strong>

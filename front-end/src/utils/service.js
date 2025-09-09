@@ -1,3 +1,46 @@
+// --- ADVICES CRUD ---
+// Salvar ou atualizar advice (POST ou PUT)
+export async function saveAdvice({ taskId, steps }, method = "POST") {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_URL}/advices`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ taskId, steps }),
+  });
+  const data = await response.json();
+  if (!response.ok)
+    throw new Error(
+      handleError({
+        status: response.status,
+        statusText: response.statusText,
+        message: data.message,
+      })
+    );
+  return data;
+}
+
+// Buscar advice por user logado e taskId
+export async function getAdviceByUserAndTask(taskId) {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_URL}/advices/user-task/${taskId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.json();
+  if (!response.ok)
+    throw new Error(
+      handleError({
+        status: response.status,
+        statusText: response.statusText,
+        message: data.message,
+      })
+    );
+  return data;
+}
 // Buscar tarefas por data de encerramento (dueDate)
 export async function getTasksByDueDate(dueDate) {
   const response = await fetch(
@@ -173,11 +216,11 @@ export async function deleteTask(id) {
 }
 
 // Função para consumir o conselho de tarefa via OpenAI
-export async function getTaskAdvice(tarefa, deadline) {
+export async function getTaskAdvice(tarefa, description, deadline) {
   const response = await fetch(`${API_URL}/tasks/advice`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tarefa, deadline }),
+    body: JSON.stringify({ tarefa, description, deadline }),
   });
   const data = await response.json();
   if (!response.ok)

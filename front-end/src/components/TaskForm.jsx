@@ -1,6 +1,6 @@
-import { Button, Input, SelectPicker } from "rsuite";
+import { Button, DatePicker, Input, SelectPicker } from "rsuite";
 import { useTaskContext } from "../context/TaskContext";
-const TaskForm = () => {
+const TaskForm = ({ onTaskUpdated }) => {
   const {
     form,
     setForm,
@@ -14,6 +14,7 @@ const TaskForm = () => {
   } = useTaskContext();
 
   const today = new Date().toISOString().slice(0, 10);
+
   const handleSubmit = async (e) => {
     console.log("Form enviado:", form);
     e.preventDefault();
@@ -26,8 +27,10 @@ const TaskForm = () => {
     if (editId) {
       await editTask(editId, payload);
       setEditId(false);
+      if (onTaskUpdated) onTaskUpdated();
     } else {
       await addTask(payload);
+      if (onTaskUpdated) onTaskUpdated();
     }
     setForm({
       title: "",
@@ -70,14 +73,17 @@ const TaskForm = () => {
           style={{ marginBottom: 12 }}
           required
         />
-        <Input
-          name="dueDate"
-          type="date"
-          value={form.dueDate || today}
-          onChange={(value, event) =>
-            setForm({ ...form, dueDate: event?.target?.value || value })
-          }
-          style={{ marginBottom: 12 }}
+        <DatePicker
+          value={form.dueDate ? new Date(form.dueDate) : null}
+          onChange={(date) => {
+            setForm({
+              ...form,
+              dueDate: date ? date.toISOString().slice(0, 10) : "",
+            });
+          }}
+          format="dd/MM/yyyy"
+          placeholder="Selecione a data"
+          style={{ marginBottom: 12, width: "100%" }}
           required
         />
         <SelectPicker

@@ -17,11 +17,15 @@ export const TaskProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [editId, setEditId] = useState(null);
+  const [advice, setAdvice] = useState(null);
+  // adviceByTaskId: { [taskId]: { advice: string, steps: array } }
+  const [adviceByTaskId, setAdviceByTaskId] = useState({});
 
+  const today = new Date().toISOString().slice(0, 10);
   const initialFormState = {
     title: "",
     description: "",
-    dueDate: "",
+    dueDate: today,
     status: "pendente",
   };
   const [form, setForm] = useState(initialFormState);
@@ -117,6 +121,10 @@ export const TaskProvider = ({ children }) => {
         initialFormState,
         editId,
         setEditId,
+        advice,
+        setAdvice,
+        adviceByTaskId,
+        setAdviceByTaskId,
       }}
     >
       {children}
