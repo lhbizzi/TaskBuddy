@@ -78,7 +78,7 @@ const Sidebar = () => {
               onClick={handleLogout}
               style={{ color: "#e74c3c", marginTop: "20px" }}
             >
-              Logout
+              Sair
             </Nav.Item>
           </Nav>
         </Sidenav.Body>
