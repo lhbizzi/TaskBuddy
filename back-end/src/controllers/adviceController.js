@@ -25,9 +25,9 @@ const AdviceController = {
       if (!taskId)
         return res.status(400).json({ message: "taskId é obrigatório." });
       const advice = await AdviceService.getAdviceByUserAndTask(userId, taskId);
-      if (!advice)
-        return res.status(404).json({ message: "Advice não encontrado" });
-      res.json(advice);
+      // Se não houver advice no banco, retornar 200 com valor null
+      if (!advice) return res.status(200).json(null);
+      return res.status(200).json(advice);
     } catch (err) {
       res
         .status(500)

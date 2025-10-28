@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader, Nav } from "rsuite";
 import "./home.css";
 import { getTasksByDueDate, getTasksByCreatedAt } from "../../utils/service";
@@ -39,6 +39,7 @@ const Home = () => {
     setEditId,
     advice,
     setAdvice,
+    adviceByTaskId,
     setAdviceByTaskId,
     reloadHome,
     setReloadHome,
@@ -62,6 +63,17 @@ const Home = () => {
 
     // 1) Primeiro, tenta obter advice salvo no banco
     try {
+      // 0) verifica cache local primeiro
+      const cached = adviceByTaskId && adviceByTaskId[task._id];
+      if (cached) {
+        setAdvice(cached.advice || "");
+        setAdviceSteps(cached.steps || []);
+        setOpenAdvice(true);
+        setLoadingAdviceId(null);
+        return;
+      }
+
+      // 1) tenta obter advice salvo no banco
       const saved = await getAdviceByUserAndTask(task._id);
       if (saved) {
         const normalizedSaved = normalizeSteps(saved.steps || []);
@@ -123,6 +135,16 @@ const Home = () => {
     }
   };
 
+  // Atualiza steps no estado local e no cache adviceByTaskId (inclui checked)
+  const handleAdviceStepsChange = (steps) => {
+    setAdviceSteps(steps || []);
+    if (!currentAdviceTaskId) return;
+    setAdviceByTaskId((prev) => ({
+      ...prev,
+      [currentAdviceTaskId]: { advice: advice || "", steps: steps || [] },
+    }));
+  };
+
   useEffect(() => {
     async function fetchTasks() {
       setLoading(true);
@@ -143,7 +165,7 @@ const Home = () => {
       }
     }
     fetchTasks();
-  }, [activeKey, todayStr, reloadHome]);
+  }, [activeKey, todayStr, reloadHome, setReloadHome]);
 
   // Função para obter conselho da IA para uma tarefa
 
@@ -279,7 +301,7 @@ const Home = () => {
             advice={advice}
             adviceSteps={adviceSteps}
             tasks={tasks}
-            onAdviceStepsChange={setAdviceSteps}
+            onAdviceStepsChange={handleAdviceStepsChange}
             titleTask={form.title}
             taskId={currentAdviceTaskId}
           />
