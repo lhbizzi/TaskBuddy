@@ -18,8 +18,11 @@ export const TaskProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [editId, setEditId] = useState(null);
   const [advice, setAdvice] = useState(null);
+  const [reloadHome, setReloadHome] = useState(false);
   // adviceByTaskId: { [taskId]: { advice: string, steps: array } }
   const [adviceByTaskId, setAdviceByTaskId] = useState({});
+
+  const [modalOpen, setModalOpen] = useState(false);
 
   const today = new Date().toISOString().slice(0, 10);
   const initialFormState = {
@@ -63,6 +66,8 @@ export const TaskProvider = ({ children }) => {
       const newTask = await createTask(task);
       setTasks((prev) => [...prev, newTask]);
       successMessage("Tarefa criada com sucesso");
+      // dispara recarregar nas páginas que dependem de reloadHome
+      setReloadHome((prev) => !prev);
     } catch (err) {
       setError(err.message || "Erro ao criar tarefa");
       errorMessage(err.message || "Erro ao criar tarefa");
@@ -78,6 +83,8 @@ export const TaskProvider = ({ children }) => {
       const updated = await updateTask(id, updates);
       setTasks((prev) => prev.map((t) => (t._id === id ? updated : t)));
       successMessage("Tarefa atualizada com sucesso");
+      // dispara recarregar nas páginas que dependem de reloadHome
+      setReloadHome((prev) => !prev);
     } catch (err) {
       setError(err.message || "Erro ao atualizar tarefa");
       errorMessage(err.message || "Erro ao criar tarefa");
@@ -93,11 +100,14 @@ export const TaskProvider = ({ children }) => {
       await deleteTask(id);
       setTasks((prev) => prev.filter((t) => t._id !== id));
       successMessage("Tarefa deletada com sucesso");
+      // dispara recarregar nas páginas que dependem de reloadHome
+      setReloadHome((prev) => !prev);
     } catch (err) {
       setError(err.message || "Erro ao deletar tarefa");
       errorMessage(err.message || "Erro ao criar tarefa");
     } finally {
       setLoading(false);
+      setModalOpen(false);
     }
   };
 
@@ -125,6 +135,10 @@ export const TaskProvider = ({ children }) => {
         setAdvice,
         adviceByTaskId,
         setAdviceByTaskId,
+        reloadHome,
+        setReloadHome,
+        modalOpen,
+        setModalOpen,
       }}
     >
       {children}

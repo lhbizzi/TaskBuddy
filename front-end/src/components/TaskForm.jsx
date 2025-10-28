@@ -1,4 +1,4 @@
-import { Button, DatePicker, Input, SelectPicker } from "rsuite";
+import { Button, DatePicker, Input, Modal, SelectPicker } from "rsuite";
 import { useTaskContext } from "../context/TaskContext";
 const TaskForm = ({ onTaskUpdated }) => {
   const {
@@ -13,7 +13,23 @@ const TaskForm = ({ onTaskUpdated }) => {
     initialFormState,
   } = useTaskContext();
 
-  const today = new Date().toISOString().slice(0, 10);
+  // ...existing code...
+  // Funções para usar data local (evita problema com toISOString/UTC)
+  const formatDateLocal = (date) => {
+    if (!date) return "";
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
+  const parseDateString = (str) => {
+    if (!str) return null;
+    const [y, m, d] = str.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  };
+
+  const today = formatDateLocal(new Date());
 
   const handleSubmit = async (e) => {
     console.log("Form enviado:", form);
@@ -74,11 +90,11 @@ const TaskForm = ({ onTaskUpdated }) => {
           required
         />
         <DatePicker
-          value={form.dueDate ? new Date(form.dueDate) : null}
+          value={form.dueDate ? parseDateString(form.dueDate) : null}
           onChange={(date) => {
             setForm({
               ...form,
-              dueDate: date ? date.toISOString().slice(0, 10) : "",
+              dueDate: date ? formatDateLocal(date) : "",
             });
           }}
           format="dd/MM/yyyy"

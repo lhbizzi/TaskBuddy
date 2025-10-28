@@ -3,16 +3,32 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./calendar.css";
 import { RiAiGenerate2, RiDeleteBin6Line, RiEdit2Line } from "react-icons/ri";
-import { Modal } from "rsuite";
+import { Modal, Loader } from "rsuite";
 import AdviceModal from "../../components/AdviceModal";
 import TaskForm from "../../components/TaskForm";
 import { useTaskContext } from "../../context/TaskContext";
+import { getTaskAdvice, getAdviceByUserAndTask } from "../../utils/service";
+import { errorMessage } from "../../utils/notifications";
 
 const CalendarPage = () => {
   const [date, setDate] = useState(new Date());
   const [adviceSteps, setAdviceSteps] = useState([]);
+  // normaliza steps para [{ text, checked }]
+  const normalizeSteps = (arr) =>
+    (arr || []).map((s) => {
+      if (!s) return { text: "", checked: false };
+      if (typeof s === "string") return { text: s, checked: false };
+      if (typeof s === "object")
+        return {
+          text: s.text || s.label || String(s),
+          checked: !!s.checked || !!s.done || false,
+        };
+      return { text: String(s), checked: false };
+    });
   // adviceByTaskId agora vem do contexto global
   const [openAdvice, setOpenAdvice] = useState(false);
+  const [currentAdviceTaskId, setCurrentAdviceTaskId] = useState(null);
+  const [loadingAdviceId, setLoadingAdviceId] = useState(null);
   const {
     tasks,
     removeTask,
@@ -22,7 +38,6 @@ const CalendarPage = () => {
     form,
     advice,
     setAdvice,
-    adviceByTaskId,
     setAdviceByTaskId,
   } = useTaskContext();
   // Garantir valor estável para initialFormState
@@ -30,17 +45,34 @@ const CalendarPage = () => {
 
   // Função para obter conselho da IA para uma tarefa
   const handleAdvice = async (task) => {
-    // Checa se já existe advice para o ID da tarefa
-    if (adviceByTaskId[task._id]) {
-      setAdvice(adviceByTaskId[task._id].advice);
-      setAdviceSteps(adviceByTaskId[task._id].steps);
-      setOpenAdvice(true);
-      return;
-    }
+    // marca como loading para essa tarefa até abrir o modal
+    setLoadingAdviceId(task._id);
+    setCurrentAdviceTaskId(task._id);
+    console.log("Buscando conselho da IA para tarefa:", task);
+
+    // 1) Primeiro, tenta obter advice salvo no banco
     try {
-      // Busca do backend
-      const service = await import("../../utils/service");
-      const dicasObj = await service.getTaskAdvice(
+      const saved = await getAdviceByUserAndTask(task._id);
+      if (saved) {
+        const normalizedSaved = normalizeSteps(saved.steps || []);
+        setAdvice(saved.advice || "");
+        setAdviceSteps(normalizedSaved);
+        setAdviceByTaskId((prev) => ({
+          ...prev,
+          [task._id]: { advice: saved.advice || "", steps: normalizedSaved },
+        }));
+        setOpenAdvice(true);
+        setLoadingAdviceId(null);
+        return;
+      }
+    } catch (err) {
+      errorMessage("Erro ao obter conselho salvo", err);
+      setLoadingAdviceId(null);
+    }
+
+    // 2) Se não houver no banco, solicita à IA
+    try {
+      const dicasObj = await getTaskAdvice(
         task.title,
         task.description,
         task.dueDate || task.date,
@@ -63,16 +95,21 @@ const CalendarPage = () => {
         adviceText = dicasObj.advice || "";
       }
       setAdvice(adviceText);
-      setAdviceSteps(steps);
+      const normalized = normalizeSteps(steps);
+      setAdviceSteps(normalized);
       setAdviceByTaskId((prev) => ({
         ...prev,
-        [task._id]: { advice: adviceText, steps },
+        [task._id]: { advice: adviceText, steps: normalized },
       }));
       setOpenAdvice(true);
+      // desativa loader quando o modal é aberto
+      setLoadingAdviceId(null);
+      setCurrentAdviceTaskId(task._id);
     } catch {
       setAdvice("Erro ao obter conselho da IA");
       setAdviceSteps([]);
       setOpenAdvice(true);
+      setLoadingAdviceId(null);
     }
   };
 
@@ -160,13 +197,22 @@ const CalendarPage = () => {
                           type="button"
                           title="Conselho da IA"
                           onClick={() => handleAdvice(task)}
+                          disabled={loadingAdviceId === task._id}
+                          aria-busy={loadingAdviceId === task._id}
                           style={{
                             background: "none",
                             border: "none",
-                            cursor: "pointer",
+                            cursor:
+                              loadingAdviceId === task._id
+                                ? "default"
+                                : "pointer",
                           }}
                         >
-                          <RiAiGenerate2 />
+                          {loadingAdviceId === task._id ? (
+                            <Loader size="sm" />
+                          ) : (
+                            <RiAiGenerate2 />
+                          )}
                         </button>
                       </div>
                       <div></div>
@@ -218,12 +264,16 @@ const CalendarPage = () => {
           <TaskForm />
           <AdviceModal
             open={openAdvice}
-            onClose={() => setOpenAdvice(false)}
+            onClose={() => {
+              setOpenAdvice(false);
+              setCurrentAdviceTaskId(null);
+            }}
             advice={advice}
             adviceSteps={adviceSteps}
             tasks={tasks}
             onAdviceStepsChange={setAdviceSteps}
             titleTask={form.title}
+            taskId={currentAdviceTaskId}
           />
           {advice && (
             <div className="task-advice">
